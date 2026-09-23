@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEST BUILD — строительный сервер Rust</title>
+<meta name="description" content="Русский строительный сервер Rust: бесконечные ресурсы, рейд-тест, сохранение схем баз, без PvP.">
+<style>
+  :root {
+    --bg: #14110f;
+    --card: #1e1a17;
+    --line: #2e2823;
+    --text: #e8e2db;
+    --dim: #9a9089;
+    --accent: #d2703a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.6;
+    padding: 24px 16px 48px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { text-align: center; padding: 32px 0 28px; }
+  h1 {
+    font-size: 40px;
+    letter-spacing: 2px;
+    font-weight: 800;
+  }
+  h1 span { color: var(--accent); }
+  .tagline { color: var(--dim); margin-top: 8px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .ip {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 19px;
+    text-align: center;
+    padding: 12px;
+    background: #100e0c;
+    border-radius: 6px;
+    word-break: break-all;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-main { background: var(--accent); color: #fff; }
+  .btn-alt { background: #5865F2; color: #fff; }
+  h2 {
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+  ul { list-style: none; }
+  li { padding: 5px 0 5px 18px; position: relative; }
+  li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  code {
+    font-family: ui-monospace, Consolas, monospace;
+    color: var(--accent);
+  }
+  ol { padding-left: 20px; }
+  ol li { padding-left: 4px; }
+  ol li::before { content: none; }
+  footer {
+    text-align: center;
+    color: var(--dim);
+    font-size: 14px;
+    margin-top: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>NEST <span>BUILD</span></h1>
+    <p class="tagline">Русский строительный сервер Rust</p>
+  </header>
+
+  <div class="card">
+    <div class="ip" id="ip">212.22.93.105:28044</div>
+    <button class="btn btn-main" id="copy">Скопировать команду подключения</button>
+    <a class="btn btn-alt" href="https://discord.gg/PB2ptgZTkG">Discord сервера</a>
+  </div>
+
+  <div class="card">
+    <h2>Как подключиться</h2>
+    <ol>
+      <li>Нажми кнопку выше — команда скопируется</li>
+      <li>В игре нажми <code>F1</code></li>
+      <li>Вставь команду и нажми Enter</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Что на сервере</h2>
+    <ul>
+      <li>Ресурсы выдаются сразу при входе, фармить не нужно</li>
+      <li>Все чертежи открыты, крафт мгновенный</li>
+      <li>PvP выключен, чужие постройки сломать нельзя</li>
+      <li>Постройки не разрушаются со временем</li>
+      <li>Вечный день, животные не атакуют</li>
+      <li>Можно взорвать свою базу и посчитать стоимость рейда</li>
+      <li>Сохранение и загрузка схем построек</li>
+      <li>20 слотов, карта 3000</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Команды</h2>
+    <ul>
+      <li><code>/kit build</code> — ресурсы без ограничений</li>
+      <li><code>/kit raid</code> — взрывчатка для рейд-теста своей базы</li>
+      <li><code>/remove</code> — удалить постройку, наведись на блок</li>
+      <li><code>/copy название</code> — сохранить свою базу</li>
+      <li><code>/paste название</code> — поставить сохранённую базу</li>
+      <li><code>/help</code> — все команды в игре</li>
+    </ul>
+  </div>
+
+  <footer>
+    Сервер запущен в сентябре 2026. Админ сидит в чате — напиши, если что-то нужно.
+  </footer>
+
+</div>
+
+<script>
+  var btn = document.getElementById('copy');
+  var cmd = 'client.connect 212.22.93.105:28044';
+
+  btn.onclick = function () {
+    // современный способ копирования
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(cmd).then(done, fallback);
+    } else {
+      fallback();
+    }
+  };
+
+  // запасной способ для старых браузеров
+  function fallback() {
+    var t = document.createElement('textarea');
+    t.value = cmd;
+    document.body.appendChild(t);
+    t.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(t);
+  }
+
+  function done() {
+    btn.textContent = 'Скопировано!';
+    setTimeout(function () {
+      btn.textContent = 'Скопировать команду подключения';
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>
